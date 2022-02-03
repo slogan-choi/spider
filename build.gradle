@@ -1,0 +1,52 @@
+buildscript {
+	ext {
+		spring = "org.springframework"
+		boot = "${spring}.boot"
+		bootVersion = "2.6.3"
+		lombok = "org.projectlombok:lombok"
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "$boot:spring-boot-gradle-plugin:$bootVersion"
+	}
+}
+
+allprojects {
+	group("com.h8h9")
+	version("1.0.0")
+}
+
+subprojects {
+	apply plugin: "java-library"
+	apply plugin: boot
+	apply plugin: "io.spring.dependency-management"
+
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		implementation "$boot:spring-boot-starter-data-jpa"
+		implementation "$boot:spring-boot-starter-web"
+		compileOnly lombok
+		developmentOnly "$boot:spring-boot-devtools"
+		runtimeOnly 'com.h2database:h2'
+		annotationProcessor lombok
+		testImplementation "$boot:spring-boot-starter-test"
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+//	test {
+//		useJUnitPlatform()
+//	}
+}
+
+rootProject.subprojects {
+	if(!it.name.endsWith("-api")) {
+		it.tasks["bootJar"].enabled = false
+	}
+}

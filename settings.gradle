@@ -1,0 +1,36 @@
+rootProject.name = 'spider'
+
+def GRADLE_TEXT = """
+dependencies {
+
+}
+"""
+
+def file(dir, name) {
+    return file("${dir.absolutePath}/${name}")
+}
+// spider-app-price-api, spider-domain-rds, spider-core, spider-coupang-client
+["app", "domain", "core", "client"].forEach(moduleName->{
+    def moduleDir = file(rootDir, moduleName)
+    if (!moduleDir.exists()) {
+        moduleDir.mkdirs()
+    }
+    moduleDir.eachFile { subProjectDir ->
+        def buildFile = file(subProjectDir, "build.gradle")
+        if (!buildFile.exists()) {
+            buildFile.text = GRADLE_TEXT
+        }
+
+        def projectName = ":${subProjectDir.name}"
+        include projectName
+        project(projectName).projectDir = subProjectDir
+
+        ["src/main/java/com/h8h9/${moduleName}", "src/main/resources",
+         "src/test/java/com/h8h9/${moduleName}", "src/test/resources"].forEach(src->{
+            def srcDir = file(subProjectDir, src)
+            if (!srcDir.exists()) {
+                srcDir.mkdirs()
+            }
+        })
+    }
+})

@@ -1,0 +1,5 @@
+
+dependencies {
+    api(project(':spider-coupang-client'))
+    api(project(':spider-core'))
+}
